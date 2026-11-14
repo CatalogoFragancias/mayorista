@@ -154,6 +154,7 @@
         .scroll-down-wrap { position: -webkit-sticky; position: sticky; bottom: 12px; height: 0; display: none; justify-content: center; overflow: visible; z-index: 5; flex-shrink: 0; pointer-events: none; }
         .scroll-down { pointer-events: auto; transform: translateY(-100%); width: 46px; height: 46px; border-radius: 50%; border: none; background: #8b7355; color: #fff; font-size: 1.5rem; line-height: 1; cursor: pointer; box-shadow: 0 3px 12px rgba(0,0,0,0.35); animation: rebote 1.6s ease-in-out infinite; }
         @keyframes rebote { 0%, 100% { margin-top: 0; } 50% { margin-top: -6px; } }
+        .btn-minorista { display: block; width: fit-content; max-width: 100%; box-sizing: border-box; text-align: center; text-decoration: none; margin: 10px auto 0; padding: 10px 14px; border-radius: 6px; background: #8b7355; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -245,6 +246,7 @@
                 <span id="totalDisplay">$0</span>
             </div>
             <div class="tier-hint" id="tierHint"></div>
+            <a class="btn-minorista" id="btnMinorista" href="https://catalogofragancias.github.io/" target="_blank" rel="noopener" style="display:none;">Para compras minoristas presioná aquí</a>
         </div>
 
         <div class="checkout-form" id="checkoutForm">
@@ -1461,11 +1463,14 @@
         const hint = document.getElementById('tierHint');
         if (totalItems < ESCALAS[0].desde) {
             hint.className = 'tier-hint warn';
+            document.getElementById('btnMinorista').style.display = 'block';
             hint.innerText = 'Compra mínima mayorista: ' + ESCALAS[0].desde + ' unidades. Te faltan ' + (ESCALAS[0].desde - totalItems) + '.';
         } else if (info.siguiente) {
+            document.getElementById('btnMinorista').style.display = 'none';
             hint.className = 'tier-hint';
             hint.innerText = 'Agregá ' + (info.siguiente.desde - totalItems) + ' más y pagás ' + formateadorMoneda.format(info.siguiente.precio) + ' c/u.';
         } else {
+            document.getElementById('btnMinorista').style.display = 'none';
             hint.className = 'tier-hint';
             hint.innerText = '¡Ya tenés el mejor precio!';
         }
