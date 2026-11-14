@@ -55,8 +55,11 @@
         .search-box:focus { outline: none; border-bottom: 2px solid #8b7355; }
         
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 400px; }
-        th, td { padding: 15px 10px; text-align: left; border-bottom: 1px solid #d3cec5; vertical-align: middle; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
+        th, td { padding: 15px 10px; text-align: left; border-bottom: 1px solid #d3cec5; vertical-align: middle; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
+        th.col-marca { width: 24%; } th.col-perfume { width: 32%; } th.col-cat { width: 24%; } th.col-pedido { width: 20%; }
+        .cat-mobile { display: none; }
+        .btn-add .btn-mas { font-size: 1rem; line-height: 1; margin-right: 2px; }
         th { font-weight: 600; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; color: #1a1a1a; }
         tr:hover td { background-color: rgba(211, 206, 197, 0.3); }
         .marca-text { font-weight: 600; color: #000; }
@@ -104,12 +107,24 @@
         @media (max-width: 600px) {
             body { padding: 10px; padding-bottom: 80px; }
             .container { padding: 20px 10px; }
-            h1 { font-size: 4.5rem; }
+            h1 { font-size: 4.5rem; font-size: clamp(3.2rem, 18vw, 4.5rem); max-width: 100%; overflow-wrap: anywhere; }
             .header-title h3 { font-size: 1.2rem; letter-spacing: 2px; }
             .filter-btn { padding: 6px 12px; font-size: 0.7rem; }
-            th, td { padding: 12px 8px; font-size: 0.85rem; }
-            .btn-add { font-size: 0.7rem; padding: 6px 10px; }
+            th, td { padding: 10px 5px; font-size: 0.85rem; }
+            th { font-size: 0.7rem; letter-spacing: 0.5px; }
+            th.col-marca { width: 29%; } th.col-perfume { width: 47%; } th.col-pedido { width: 24%; }
+            .col-cat { display: none; }
+            .cat-mobile { display: block; margin-top: 2px; font-size: 0.62rem; letter-spacing: 0.5px; line-height: 1.25; }
+            .btn-add { font-size: 0.68rem; padding: 7px 8px; }
             .cart-floating { bottom: 15px; right: 15px; padding: 12px 20px; font-size: 0.9rem; }
+        }
+        /* Teléfonos angostos: el botón de agregar queda como un "+" redondo */
+        @media (max-width: 430px) {
+            .btn-txt { display: none; }
+            .btn-add { width: 36px; height: 36px; padding: 0; border-radius: 50%; font-size: 1.2rem; display: inline-flex; align-items: center; justify-content: center; }
+            .btn-add .btn-mas { font-size: 1.35rem; margin: 0; }
+            th.col-marca { width: 30%; } th.col-perfume { width: 48%; } th.col-pedido { width: 22%; }
+            th.col-pedido, td:last-child { text-align: center; }
         }
 
         .container { position: relative; }
@@ -136,7 +151,7 @@
         .cart-actions { display: none; justify-content: flex-end; margin: -5px 0 12px; }
         .btn-vaciar { background: none; border: 1px solid #b00020; color: #b00020; padding: 7px 12px; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; cursor: pointer; }
         .btn-vaciar.confirmar { background: #b00020; color: #fff; }
-        .scroll-down-wrap { position: sticky; bottom: 12px; height: 0; display: none; justify-content: center; overflow: visible; z-index: 5; flex-shrink: 0; pointer-events: none; }
+        .scroll-down-wrap { position: -webkit-sticky; position: sticky; bottom: 12px; height: 0; display: none; justify-content: center; overflow: visible; z-index: 5; flex-shrink: 0; pointer-events: none; }
         .scroll-down { pointer-events: auto; transform: translateY(-100%); width: 46px; height: 46px; border-radius: 50%; border: none; background: #8b7355; color: #fff; font-size: 1.5rem; line-height: 1; cursor: pointer; box-shadow: 0 3px 12px rgba(0,0,0,0.35); animation: rebote 1.6s ease-in-out infinite; }
         @keyframes rebote { 0%, 100% { margin-top: 0; } 50% { margin-top: -6px; } }
     </style>
@@ -184,10 +199,10 @@
         <table id="catalogTable">
             <thead>
                 <tr>
-                    <th>Marca</th>
-                    <th>Fragancia</th>
-                    <th>Categoría</th>
-                    <th>Pedido</th>
+                    <th class="col-marca">Marca</th>
+                    <th class="col-perfume">Fragancia</th>
+                    <th class="col-cat">Categoría</th>
+                    <th class="col-pedido">Pedido</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
@@ -973,13 +988,12 @@
                 <td><span class="marca-text">${esc(item.marca)}</span></td>
                 <td>
                     <span class="perfume-text">${esc(item.perfume)}</span>
+                    <span class="category-badge cat-mobile">${esc(item.categoria)}</span>
                     <a class="foto-link" href="${urlFoto}" data-foto="${encodeURIComponent(item.foto || '')}" data-titulo="${encodeURIComponent(item.marca + ' - ' + item.perfume)}" onclick="return verFoto(this)">📷 Ver foto</a>
                 </td>
-                <td><span class="category-badge">${esc(item.categoria)}</span></td>
+                <td class="col-cat"><span class="category-badge">${esc(item.categoria)}</span></td>
                 <td>
-                    <button class="btn-add" onclick="agregarAlCarrito('${safeMarca}', '${safePerfume}', '${safeCat}')">
-                        + Agregar
-                    </button>
+                    <button class="btn-add" aria-label="Agregar al pedido" onclick="agregarAlCarrito('${safeMarca}', '${safePerfume}', '${safeCat}')"><span class="btn-mas">+</span><span class="btn-txt"> Agregar</span></button>
                 </td>
             `;
             tableBody.appendChild(tr);
